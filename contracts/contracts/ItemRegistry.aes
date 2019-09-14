@@ -1,0 +1,46 @@
+contract ItemRegistry =
+
+    // CONTRACT STATE DEFINITION
+    record state = 
+        { maintainer : address
+        , items: list(item)
+        , limit: int }
+
+    // ITEM DEFINITION
+    record item =
+        { publicKey: bytes(64) // unique in registry, EDCSA signature based
+        , identifier: string // unique in registry
+        , metadata: string }
+
+    // EVENTS
+    datatype event = ItemAdded(string)
+
+    // INIT METHOD
+    entrypoint init(limit : int) =
+        { maintainer = Call.caller,
+          items = [],
+          limit = limit }
+
+    // STATEFUL FUNCTIONS
+    stateful entrypoint changeMaintainer(newMaintainer: address) =
+        onlyMaintainer()
+        put(state{maintainer = newMaintainer})
+
+    stateful entrypoint addItem(publicKey: bytes(64), identifier: string, metadata: string) =
+        onlyMaintainer()
+        // TODO
+
+    // READY ONLY FUNCTIONS
+    entrypoint getLimit() =
+        state.limit
+
+    entrypoint verifyItem(publicKey: bytes(64), challengeMsg: hash, sig: bytes(64)) : bool =
+        Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig)
+
+    // VERIFICATION FUNCTIONS
+    function onlyMaintainer() =
+        require(Call.caller == state.maintainer, "caller must be the maintainer")
+    
+    function validateParams(publicKey: string, identifier: string) =
+        // TODO
+        ()
