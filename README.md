@@ -1,4 +1,4 @@
-**Identity of Things**
+# Identity of Things
 
 **The Problem**
 - when you want to buy luxury products (e.g. a Rolex) you are not able to verify whether it is a fake or not
