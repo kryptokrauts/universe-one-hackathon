@@ -9,7 +9,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@aeternity/aepp-components": "git+https://github.com/kenodressel/aepp-components.git#develop",
+    "@aeternity/aepp-components": "^2.0.15",
     "@aeternity/aepp-sdk": "~4.7.0",
     "axios": "^0.19.0",
     "bignumber.js": "^9.0.0",
@@ -35,7 +35,7 @@
     "babel-plugin-add-module-exports": "^1.0.2",
     "browserslist": "^4.7.0",
     "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^3.0.0",
+    "css-loader": "^3.2.0",
     "cssnano": "^4.1.10",
     "file-loader": "^4.0.0",
     "glob-all": "^3.1.0",
