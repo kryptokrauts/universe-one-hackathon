@@ -3,10 +3,10 @@ The frontend should provide following functionalities:
 
 - **SmartContract**
     - deployment of a new registry contract
-    - call the stateful `addProduct` function with following params:
+    - call the stateful `addItem` function with following params:
         - EDCSA signature based publickey of the product
         - metadata (e.g. serialno.) -> needs to be defined
-    - call the `verifyProduct` function with following params:
+    - call the `verifyItem` function with following params:
         - publickey of the product
         - message
         - signedMessage (which needs to be verified)
