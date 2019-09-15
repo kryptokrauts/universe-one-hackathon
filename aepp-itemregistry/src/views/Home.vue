@@ -2,15 +2,17 @@
   <div>
     <h1>Identity of Things</h1><br /><br /><br />
     <h2>Domain of ItemRegistry</h2>
-    {itemRegistryDomain}<br /><br />
+    {{itemRegistryDomain}}<br /><br />
+    <h2>Contract-address</h2>
+    {{contractAddress}}<br /><br />
     <h2>PublicKey of Item</h2>
-    {publicKey}<br /><br />
+    {{publicKey}}<br /><br />
     <h2>Random Message</h2>
-    {randomMessage}<br /><br />
+    {{randomMessage}}<br /><br />
     <h2>Signature</h2>
-    {signature}<br /><br />
+    {{signature}}<br /><br />
     <h2>Valid item?</h2>
-    {valid}
+    {{valid}}
   </div>
 </template>
 
@@ -24,7 +26,7 @@
     name: 'Home',
     components: {},
     data() {
-      return {
+      return {  
         contractAddress: null,
         itemRegistryDomain: null,
         publicKey: null,
@@ -84,18 +86,23 @@
       };
 
       async function verifySignature(domain, publickey, message, signature) {
+        console.log(aensContractInstanceMap.get(domain));
         return await aensContractInstanceMap.get(domain).methods.verifyItem(publickey, sha256(randomUUID), signature);
       }
 
+      //let domain = rolex1970Domain;
+      let domain = rolex2019Domain;
+      this.itemRegistryDomain = domain;
       let publicKeyOfItem = await getPublicKey();
       this.publicKey = publicKeyOfItem;
       let randomUUID = uuidv4();
       this.randomMessage = randomUUID;
       let signature = await getSignatureFromItem(randomUUID);
       this.signature = signature;
-      let isValid = await verifySignature(rolex1970Domain, publicKeyOfItem, randomUUID, signature);
-      this.valid = isValid;
-      console.log(isValid);
+      this.contractAddress = aensContractInstanceMap.get(domain).deployInfo.address;
+      let valid = await verifySignature(domain, publicKeyOfItem, randomUUID, signature);
+      this.valid = valid.decodedResult;
+      console.log(valid);
 
       /*
       console.log("#### GET CONTRACT INSTANCE ###")
