@@ -52,16 +52,24 @@ describe('ItemRegistry Contract', () => {
     });
 
     describe('Interact with contract', async () => {
-        it('should verify a valid signature', async () => {
-            let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(validMessage), signature1);
-            assert.equal(verificationResult.decodedResult, true);
-        });
-        it('should NOT verify an invalid signature', async () => {
-            let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(invalidMessage), signature1);
-            assert.equal(verificationResult.decodedResult, false);
+        it('should NOT verify a valid signature if item does not exist in registry', async () => {
+            try {
+                let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(validMessage), signature1);
+                assert.equal(verificationResult.decodedResult, false);
+            } catch (e) {
+                console.log(e.decodedError);
+            }
         });
         it('should be able to add an item', async () => {
             await deployedContractOwner.addItem(publicKey1, "some metadata");
+        });
+        it('should verify a valid signature if item exists in registry', async () => {
+            let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(validMessage), signature1);
+            assert.equal(verificationResult.decodedResult, true);
+        });
+        it('should NOT verify a signature for a wrong message', async () => {
+            let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(invalidMessage), signature1);
+            assert.equal(verificationResult.decodedResult, false);
         });
         it('should NOT be able to add item with same publicKey again', async () => {
             try {

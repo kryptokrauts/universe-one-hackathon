@@ -1,19 +1,10 @@
 contract ItemRegistry =
 
-    // ITEM DEFINITION
-    record itemData =
-        { publicKey: bytes(64) // unique in registry, EDCSA signature based
-        , metadata: string }
-
-    // TYPE DEFINITION
-    type items = map(int, itemData)
-
     // CONTRACT STATE DEFINITION
     record state = 
         { maintainer : address
         , limit: int
-        , itemIndex: int
-        , items: items }
+        , items: map(bytes(64), string) }
 
     // EVENTS
     datatype event = ItemAdded(bytes(64))
@@ -22,7 +13,6 @@ contract ItemRegistry =
     entrypoint init(limit : int) =
         { maintainer = Call.caller,
           limit = limit,
-          itemIndex = 0,
           items = {} }
 
     // STATEFUL FUNCTIONS
@@ -33,10 +23,8 @@ contract ItemRegistry =
     stateful entrypoint addItem(publicKey: bytes(64), metadata: string) =
         onlyMaintainer()
         require(Map.size(state.items) < state.limit, "maximum amount of items reached.")
-        let itemList: list((int, itemData)) = Map.to_list(state.items)
-        checkForDuplicate(itemList, publicKey)
-        let item = { publicKey = publicKey, metadata = metadata }
-        put(state{ items[state.itemIndex] = item, itemIndex = state.itemIndex + 1 })
+        require(!Map.member(publicKey, state.items), "item already included in registry")
+        put(state{items[publicKey] = metadata})
         Chain.event(ItemAdded(publicKey))
 
     // READY ONLY FUNCTIONS
@@ -44,18 +32,12 @@ contract ItemRegistry =
         state.limit
 
     entrypoint verifyItem(publicKey: bytes(64), challengeMsg: hash, sig: bytes(64)) : bool =
-        Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig) // after LIMA hardfork we need to use Crypto.verify_sig_secp256k1
+        // after LIMA hardfork we need to use Crypto.verify_sig_secp256k1
+        (Map.member(publicKey, state.items) && Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig))
 
     // VERIFICATION FUNCTIONS
     function onlyMaintainer() =
         require(Call.caller == state.maintainer, "caller must be the maintainer")
-
-    function checkForDuplicate(items: list((int, itemData)), publicKey: bytes(64)) =
-        switch(items)
-         [] => ()
-         (itemIndex, item) :: l' =>
-            require(item.publicKey != publicKey, "item already exists in the registry")
-            checkForDuplicate(l', publicKey)
 
     // HELPER FUNCTIONS
     function size(l : list('a)) : int = size'(l, 0)
