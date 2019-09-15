@@ -38,10 +38,3 @@ contract ItemRegistry =
     // VERIFICATION FUNCTIONS
     function onlyMaintainer() =
         require(Call.caller == state.maintainer, "caller must be the maintainer")
-
-    // HELPER FUNCTIONS
-    function size(l : list('a)) : int = size'(l, 0)
-    function size'(l : list('a), x : int) : int =
-        switch(l)
-            [] => x
-            _ :: l' => size'(l', x + 1)
