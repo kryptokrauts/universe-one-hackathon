@@ -31,6 +31,9 @@ contract ItemRegistry =
     entrypoint getLimit() =
         state.limit
 
+    entrypoint getItems() =
+        state.items
+
     entrypoint verifyItem(publicKey: bytes(64), challengeMsg: hash, sig: bytes(64)) : bool =
         // after LIMA hardfork we need to use Crypto.verify_sig_secp256k1
         (Map.member(publicKey, state.items) && Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig))

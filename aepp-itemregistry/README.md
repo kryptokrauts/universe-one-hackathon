@@ -1,5 +1,6 @@
-# Frontend
-The frontend should provide following functionalities:
+# ItemRegistry Aepp Vue.JS Frontend
+
+## Functionalities
 
 - **SmartContract**
     - deployment of a new registry contract
@@ -28,3 +29,18 @@ The frontend should provide following functionalities:
     1. determine the contract address based on the domain
     1. call the `verifyItem` function of the contract and provide all required parameters
     1. handle response from the contract
+
+## Setup
+
+Install the dependencies
+```
+npm install
+```
+
+Once the setup is completed you can simply run
+```
+npm run dev
+```
+
+### Known issues:
+- SCSS not working right now 

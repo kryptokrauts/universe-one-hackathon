@@ -62,6 +62,7 @@ describe('ItemRegistry Contract', () => {
         });
         it('should be able to add an item', async () => {
             await deployedContractOwner.addItem(publicKey1, "some metadata");
+            console.log(await deployedContractOwner.getItems());
         });
         it('should verify a valid signature if item exists in registry', async () => {
             let verificationResult = await deployedContractOwner.verifyItem(publicKey1, sha256(validMessage), signature1);
