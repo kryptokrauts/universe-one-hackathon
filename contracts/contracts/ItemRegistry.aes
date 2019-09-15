@@ -1,46 +1,65 @@
 contract ItemRegistry =
 
+    // ITEM DEFINITION
+    record itemData =
+        { publicKey: bytes(64) // unique in registry, EDCSA signature based
+        , metadata: string }
+
+    // TYPE DEFINITION
+    type items = map(int, itemData)
+
     // CONTRACT STATE DEFINITION
     record state = 
         { maintainer : address
-        , items: list(item)
-        , limit: int }
-
-    // ITEM DEFINITION
-    record item =
-        { publicKey: bytes(64) // unique in registry, EDCSA signature based
-        , identifier: string // unique in registry
-        , metadata: string }
+        , limit: int
+        , itemIndex: int
+        , items: items }
 
     // EVENTS
-    datatype event = ItemAdded(string)
+    datatype event = ItemAdded(bytes(64))
 
     // INIT METHOD
     entrypoint init(limit : int) =
         { maintainer = Call.caller,
-          items = [],
-          limit = limit }
+          limit = limit,
+          itemIndex = 0,
+          items = {} }
 
     // STATEFUL FUNCTIONS
     stateful entrypoint changeMaintainer(newMaintainer: address) =
         onlyMaintainer()
         put(state{maintainer = newMaintainer})
 
-    stateful entrypoint addItem(publicKey: bytes(64), identifier: string, metadata: string) =
+    stateful entrypoint addItem(publicKey: bytes(64), metadata: string) =
         onlyMaintainer()
-        // TODO
+        require(Map.size(state.items) < state.limit, "maximum amount of items reached.")
+        let itemList: list((int, itemData)) = Map.to_list(state.items)
+        checkForDuplicate(itemList, publicKey)
+        let item = { publicKey = publicKey, metadata = metadata }
+        put(state{ items[state.itemIndex] = item, itemIndex = state.itemIndex + 1 })
+        Chain.event(ItemAdded(publicKey))
 
     // READY ONLY FUNCTIONS
     entrypoint getLimit() =
         state.limit
 
     entrypoint verifyItem(publicKey: bytes(64), challengeMsg: hash, sig: bytes(64)) : bool =
-        Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig)
+        Crypto.ecverify_secp256k1(challengeMsg, publicKey, sig) // after LIMA hardfork we need to use Crypto.verify_sig_secp256k1
 
     // VERIFICATION FUNCTIONS
     function onlyMaintainer() =
         require(Call.caller == state.maintainer, "caller must be the maintainer")
-    
-    function validateParams(publicKey: string, identifier: string) =
-        // TODO
-        ()
+
+    function checkForDuplicate(items: list((int, itemData)), publicKey: bytes(64)) =
+        switch(items)
+         [] => ()
+         (itemIndex, item) :: l' =>
+            require(item.publicKey != publicKey, "item already exists in the registry")
+            checkForDuplicate(l', publicKey)
+
+    // HELPER FUNCTIONS
+    function size(l : list('a)) : int = size'(l, 0)
+    function size'(l : list('a), x : int) : int =
+        switch(l)
+            [] => x
+            _ :: l' => size'(l', x + 1)
