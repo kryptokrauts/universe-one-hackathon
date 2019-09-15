@@ -11,6 +11,7 @@
   import aeternity from "../utils/aeternity";
   import itemRegistry from '../../../aepp-contracts/contracts/ItemRegistry.aes'
   import { sha256 } from 'js-sha256';
+  import axios from 'axios';
 
   export default {
     name: 'Home',
@@ -35,17 +36,19 @@
         )
       }
 
-      console.log("#### GENERATE SOME RANDOM UUID ###")
-      const randomUUID = uuidv4();
-      console.log(randomUUID);
-
-      const validMessage = "Something";
-      const invalidMessage = "invalid";
+      async function getSignatureFromItem(msg){
+        return await axios.post('http://localhost:8080/signature', {
+          pin: '525257',
+          message: msg
+        })
+        .then(function (response) {
+          console.log(response);
+          return response.data
+        })
+      };
 
       const publicKeyRolex2019 = "F3225AFC10CBEC2B0898375DE82B8A3DE4E0B44369BFCB7088045D74237918DFBB97E181A19F824019B6AB6FA622903B24922222E5843E1486E7BCABFDCA85B1";
       const publicKeyRolex1970 = "0E6FBE920756972E3C0C13762899BEEE58F533D6746F97DC7911C07D6DBF68CEABC038BCC1E5C54A4AA51ADB74EB89D47DECC53EC3F1AA4AFA31294831092C8F";
-
-      const signature = "937C68893CBBB8B538257A9965FB1E12AECD59893775CB41354FA8B5184776616C0F0C926E7F88B6A689CD84EE05E85EFEE3532B297E7C45036257A09C9DE529";
 
       /*
       console.log("#### GET CONTRACT INSTANCE ###")
@@ -73,13 +76,19 @@
       const rolex1970Contract = await aeternity.client.getContractInstance(itemRegistry, {"contractAddress": aensContractMap.get(rolex1970Domain)});
       console.log(rolex1970Contract);
 
-      console.log("#### ACTIONS FOR ROLEX2019 CONTRACT ###")
-      
+
+      console.log("#### GENERATE SOME RANDOM UUID ###")
+      const randomUUID = uuidv4();
+      console.log(randomUUID);
+      const signature = await getSignatureFromItem(randomUUID);
+
+/*       console.log("#### ACTIONS FOR ROLEX2019 CONTRACT ###")
+ */      
 /*       console.log("#### ADD ITEM ###")
       methodResult = await rolex2019Contract.methods.addItem(publicKeyRolex2019, "some metadata for item 1 in rolex2019 registry");
       console.log(methodResult); */
       
-      console.log("#### GET ITEMS ###")
+/*       console.log("#### GET ITEMS ###")
       methodResult = await rolex2019Contract.methods.getItems();
       console.log(methodResult);
       console.log("#### VERIFY SIGNATURE OF ITEM ###")
@@ -87,7 +96,7 @@
       console.log(methodResult);
       console.log("#### EXPECTING FALSE VERIFICATION ###")
       methodResult = await rolex2019Contract.methods.verifyItem(publicKeyRolex2019, sha256(invalidMessage), signature);
-      console.log(methodResult);
+      console.log(methodResult); */
 
       console.log("#### ACTIONS FOR ROLEX1970 CONTRACT ###")
       
@@ -99,10 +108,10 @@
       methodResult = await rolex1970Contract.methods.getItems();
       console.log(methodResult);
       console.log("#### VERIFY SIGNATURE OF ITEM ###")
-      methodResult = await rolex1970Contract.methods.verifyItem(publicKeyRolex1970, sha256(validMessage), signature);
+      methodResult = await rolex1970Contract.methods.verifyItem(publicKeyRolex1970, sha256(randomUUID), signature);
       console.log(methodResult);
       console.log("#### EXPECTING FALSE VERIFICATION ###")
-      methodResult = await rolex1970Contract.methods.verifyItem(publicKeyRolex1970, sha256(invalidMessage), signature);
+      methodResult = await rolex1970Contract.methods.verifyItem(publicKeyRolex1970, sha256("this should be false"), signature);
       console.log(methodResult);
 
       this.address = aeternity.address;
