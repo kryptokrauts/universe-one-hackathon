@@ -5,25 +5,3 @@
 @import "tailwindcss/utilities";
 
 /* Add custom classes here */
-body {
-    background: #edf3f7;
-}
-
-div {
-    display: block;
-}
-
-.header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    background: #fff;
-    margin-bottom: 50px;
-    border-bottom: 1px solid #d3dce6;
-}
