@@ -16,4 +16,4 @@ For demonstration purposes we will make use of a JavaCard (https://keycard.statu
 ![](ItemVerificationFlow.png)
 
 **Final presentation**
-- [ItentityOfThings.pdf](IdentityOfThings.pdf)
+- [IdentityOfThings.pdf](IdentityOfThings.pdf)
