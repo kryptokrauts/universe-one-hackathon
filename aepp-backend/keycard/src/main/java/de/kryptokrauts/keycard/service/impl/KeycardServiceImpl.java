@@ -1,7 +1,6 @@
 package de.kryptokrauts.keycard.service.impl;
 
 import de.kryptokrauts.keycard.service.KeycardService;
-import im.status.keycard.applet.ApplicationInfo;
 import im.status.keycard.applet.KeycardCommandSet;
 import im.status.keycard.applet.Pairing;
 import im.status.keycard.applet.RecoverableSignature;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
+import java.util.UUID;
 
 /**
  * Created by njoshi on 14.09.2019
@@ -30,7 +29,7 @@ public class KeycardServiceImpl implements KeycardService {
 
         KeycardCommandSet cmdSet = preparation(pin);
 
-        byte[] hash = getHash("randomMessage");
+        byte[] hash = getHash(UUID.randomUUID().toString());
         RecoverableSignature signature = new RecoverableSignature(hash, cmdSet.sign(hash).checkOK().getData());
 
         StringBuilder publicKey = new StringBuilder();
@@ -91,16 +90,16 @@ public class KeycardServiceImpl implements KeycardService {
             e.printStackTrace();
         }
 
+        /* This should be called, only once to do pairing. */
+        // pairingPassword is usually provided by the user. This method throws an exception if pairing fails.
+        // cmdSet.autoPair("Lr3J8fd9qovtl9oy");
+        // Pairing pairing = cmdSet.getPairing();
+
+        /*   This to be called, once the pairing is done   */
         // serializedPairing can be either the byte array or base64 string representation
         Pairing pairing = new Pairing("APKjlCBGQLWn7v7qC/Iy8qysK+awowBNkswQBmRpwHgB");
-
         // Sets the pairing info in the command set. This must be done before further operation is possible
         cmdSet.setPairing(pairing);
-
-        // pairingPassword is usually provided by the user. This method throws an exception if pairing fails.
-//        cmdSet.autoPair("Lr3J8fd9qovtl9oy");
-//        cmdSet.autoPair("XmbL2Nu2rixb2pNH");
-//        Pairing pairing = cmdSet.getPairing();
 
         // Before opening a secure channel, the card won’t allow sending any command. This guarantees secrecy, integrity and authenticity of the commands.
         cmdSet.autoOpenSecureChannel();
