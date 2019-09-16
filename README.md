@@ -11,3 +11,9 @@
 - the registry smart contract (e.g. "Rolex 2019 limited") provides a function to verify the signed message and confirm the authenticity of a product
 
 For demonstration purposes we will make use of a JavaCard (https://keycard.status.im/).
+
+**The verification flow**
+![](ItemVerificationFlow.png)
+
+**Final presentation**
+- [ItentityOfThings.pdf](IdentityOfThings.pdf)

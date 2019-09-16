@@ -1,12 +1,14 @@
 <template>
   <div>
-    <h1>Identity of Things</h1><br /><br /><br />
+    <div class="header">
+        <h1>Identity of Things</h1>
+    </div>
     <h2>Domain of ItemRegistry</h2>
     {{itemRegistryDomain}}<br /><br />
     <h2>Contract-address</h2>
     {{contractAddress}}<br /><br />
     <h2>PublicKey of Item</h2>
-    {{publicKey}}<br /><br />
+    {{publicKey}}<br /><br />governance
     <h2>Random Message</h2>
     {{randomMessage}}<br /><br />
     <h2>Signature</h2>
